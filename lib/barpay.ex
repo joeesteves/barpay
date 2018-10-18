@@ -13,8 +13,16 @@ defmodule Barpay do
 
   """
   def hello do
-    IO.puts("this is it")
-    :timer.sleep(1000)
+    #Implement worker login
+    # check teamplace every 5 minutes and find ordenes de pago
+    IO.puts "CALLING MP"
+    |> IO.puts
+    :timer.sleep(20000)
     hello
+  end
+
+  def create_link(title, description, amount) do
+    MercadoPago.get_payment_link("TEST", "TEST", 1)
+
   end
 end
