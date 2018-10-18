@@ -26,3 +26,29 @@ defmodule Barpay do
 
   end
 end
+
+
+# %{
+#   Prioridad:1,
+#   Descripcion: build_description(order.desc, order.user, order.machine.name),
+#   Titulo: order.title,
+#   FechaComprobante: order.date,
+#   Fecha: order.date,
+#   PersonaIDPropietario:"413",
+#   TransaccionTipoID: "CASOTEAMPLACE",  #IMPORTANTE
+#   TransaccionSubtipoID:"CB_ASIGN_LINK",  # CODIGO DEL BPM
+#   MaquinaCodigo: order.machine_id
+#   }
+#   |>Poison.encode!()
+
+# WORKING VERSION FROM POSTMAN
+# {
+#   "Prioridad": "1",
+#   "Descripcion": "prueba - prueba",
+#   "Titulo": "6250",
+#   "FechaComprobante": "2018-10-18",
+#   "Fecha": "2018-10-18",
+#   "PersonaIDPropietario":"15",
+#   "TransaccionTipoID": "CASOTEAMPLACE",
+#   "TransaccionSubtipoID":"CB_ASIGN_LINK"
+# }

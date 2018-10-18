@@ -30,3 +30,7 @@ config :mercado_pago, client_secret: System.get_env("MP_CLIENT_SECRET")
 # here (which is why it is important to import them last).
 #
 #     import_config "#{Mix.env}.exs"
+######USAR#####ADMINISTRADOR
+#TODO: activar claves
+## teamplace client_id :85f48e322f4f6e089b5e4de00705d47e
+## teamplace secret :0afb88c1417d1d49b76361e1ccd7695f
