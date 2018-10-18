@@ -13,6 +13,8 @@ defmodule Barpay do
 
   """
   def hello do
-    :world
+    IO.puts("this is it")
+    :timer.sleep(1000)
+    hello
   end
 end
