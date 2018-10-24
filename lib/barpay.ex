@@ -21,6 +21,12 @@ defmodule Barpay do
     hello
   end
 
+  def get_pending_docs do
+    Application.get_env(:teamplace, :credentials)
+    |> IO.inspect
+    |> Teamplace.get_data("reports", "despachos", %{Empresa: "PRUEBA39", FechaDesde: "2018-01-01"})
+  end
+
   def create_link(title, description, amount) do
     MercadoPago.get_payment_link("TEST", "TEST", 1)
 
