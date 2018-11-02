@@ -1,17 +1,8 @@
 defmodule Barpay do
-  @moduledoc """
-  Documentation for Barpay.
-  """
+  @sucursal Application.get_env(:barpay, :sucursal)
+  @despachos_desde Application.get_env(:barpay, :despachos_desde)
 
-  @doc """
-  Hello world.
-
-  ## Examples
-
-      iex> Barpay.hello
-      :world
-
-  """
+  # Init method
   def loop do
     get_pending_docs()
     |> Enum.each(fn %{"TOTAL" => total, "TRANSACCIONID" => id, "DOCUMENTO" => doc} ->
@@ -26,7 +17,7 @@ defmodule Barpay do
     IO.puts("No hay despachos pendientes para procesar.. ")
     IO.puts("Proximo chequeo en 15 segundos... ")
 
-    :timer.seconds(15)
+    :timer.seconds(10)
     |> :timer.sleep
     loop()
   end
@@ -34,7 +25,8 @@ defmodule Barpay do
   def get_pending_docs do
     IO.puts "Buscando nuevos pedidos..."
     Application.get_env(:teamplace, :credentials)
-    |> Teamplace.get_data("reports", "despachos", %{Empresa: "PRUEBA39", FechaDesde: "2018-11-01", SoloPendientes: 1})
+    |> Teamplace.get_data("reports", "despachos", %{Empresa: @sucursal, FechaDesde: @despachos_desde, SoloPendientes: 1})
+    |> Enum.take(10)
   end
 
   def create_link_and_code(title, description, amount) do
