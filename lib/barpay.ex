@@ -24,9 +24,9 @@ defmodule Barpay do
       |> :timer.sleep
     end)
     IO.puts("No hay despachos pendientes para procesar.. ")
-    IO.puts("Proximo chequeo en 5 min... ")
+    IO.puts("Proximo chequeo en 15 segundos... ")
 
-    :timer.minutes(5)
+    :timer.seconds(15)
     |> :timer.sleep
 
   end
