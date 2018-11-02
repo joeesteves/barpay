@@ -4,6 +4,9 @@ use Mix.Config
 
 config :mercado_pago, client_id: System.get_env("MP_CLIENT_ID")
 config :mercado_pago, client_secret: System.get_env("MP_CLIENT_SECRET")
+config :mercado_pago, payment_methods: ["rapipago", "pagofacil"]
+config :mercado_pago, no_reply_mail: "no-reply@barosario.org.ar"
+
 config :teamplace, credentials: %{client_id: System.get_env("BAR_CLIENT_ID"), client_secret: System.get_env("BAR_CLIENT_SECRET")}
 config :teamplace, api_base: "https://8.teamplace.finneg.com/BSA/api/"
 

@@ -6,7 +6,7 @@ defmodule Barpay.Application do
   use Application
 
   def start(_type, _args) do
-    Barpay.hello
+    # Barpay.hello
     {:ok, self}
     # # List all child processes to be supervised
     # children = [
