@@ -6,17 +6,18 @@ defmodule Barpay.Application do
   use Application
 
   def start(_type, _args) do
-    # Barpay.hello
-    {:ok, self}
+    IO.puts "STARTING..."
+    Barpay.loop()
+    {:ok, self()}
     # # List all child processes to be supervised
     # children = [
     #   # Starts a worker by calling: MercadoPago.Worker.start_link(arg)
-    #   {MercadoPago.Worker, []},
+    #   {Barpay, []},
     # ]
 
-    # # See https://hexdocs.pm/elixir/Supervisor.html
-    # # for other strategies and supported options
-    # opts = [strategy: :one_for_one, name: MercadoPago.Supervisor]
+    # # # See https://hexdocs.pm/elixir/Supervisor.html
+    # # # for other strategies and supported options
+    # opts = [strategy: :one_for_one, name: Barpay.Supervisor]
     # Supervisor.start_link(children, opts)
   end
 end

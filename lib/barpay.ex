@@ -12,10 +12,12 @@ defmodule Barpay do
       :world
 
   """
-  def start do
-    get_pending_docs
+  def loop do
+    get_pending_docs()
+    |> IO.inspect
     |> Enum.each(fn %{"TOTAL" => total, "TRANSACCIONID" => id, "DOCUMENTO" => doc} ->
       create_link_and_code("Link de pago despacho #{doc}", "", total)
+      |> IO.inspect
       |> post_link(id)
 
       IO.puts("Se genero el link de pago para #{doc}")
@@ -28,18 +30,21 @@ defmodule Barpay do
 
     :timer.seconds(15)
     |> :timer.sleep
-
+    loop()
   end
 
   def get_pending_docs do
+    IO.puts "Buscando nuevos pedidos..."
     Application.get_env(:teamplace, :credentials)
     |> Teamplace.get_data("reports", "despachos", %{Empresa: "PRUEBA39", FechaDesde: "2018-11-01", SoloPendientes: 1})
   end
 
   def create_link_and_code(title, description, amount) do
+    IO.puts "Creando Link y código de pago..."
     case MercadoPago.get_link_and_rapipago_code(title, description, amount) do
       {:ok, link, code} -> {link, code}
       {:error, link } -> {link, "Error al generar código rapipago"}
+      _ -> {"Error al generar el link", "Error al generar código rapipago"}
     end
   end
 
