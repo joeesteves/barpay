@@ -14,10 +14,8 @@ defmodule Barpay do
   """
   def loop do
     get_pending_docs()
-    |> IO.inspect
     |> Enum.each(fn %{"TOTAL" => total, "TRANSACCIONID" => id, "DOCUMENTO" => doc} ->
       create_link_and_code("Link de pago despacho #{doc}", "", total)
-      |> IO.inspect
       |> post_link(id)
 
       IO.puts("Se genero el link de pago para #{doc}")
