@@ -6,7 +6,7 @@ defmodule Barpay.Application do
   use Application
 
   def start(_type, _args) do
-    IO.puts "STARTING..."
+    IO.puts "Comenzando..."
     Barpay.loop()
     {:ok, self()}
     # # List all child processes to be supervised
