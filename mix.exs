@@ -21,7 +21,7 @@ defmodule Barpay.MixProject do
 
   # Run "mix help deps" to learn about dependencies.
   defp deps do
-    case System.get_env() do
+    case  Mix.env do
       "prod" ->
         [
           {:mercado_pago, git: "https://github.com/ponyesteves/mercado_pago.git", tag: "v0.2.2"},
