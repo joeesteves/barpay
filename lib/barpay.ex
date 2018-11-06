@@ -1,8 +1,13 @@
 defmodule Barpay do
+  use Agent
   @sucursal Application.get_env(:barpay, :sucursal)
   @despachos_desde Application.get_env(:barpay, :despachos_desde)
 
   # Init method
+  def start_link(_args) do
+    loop()
+  end
+
   def loop do
     get_pending_docs()
     |> Enum.each(fn %{"TOTAL" => total, "TRANSACCIONID" => id, "DOCUMENTO" => doc} ->
