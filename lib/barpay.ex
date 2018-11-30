@@ -10,15 +10,7 @@ defmodule Barpay do
 
   def loop do
     get_pending_docs()
-    |> Enum.each(fn %{"TOTAL" => total, "TRANSACCIONID" => id, "DOCUMENTO" => doc} ->
-      create_link_and_code("Link de pago despacho #{doc}", "", total)
-      |> post_link(id)
-
-      IO.puts("Se genero el link de pago para #{doc}")
-
-      :timer.seconds(5)
-      |> :timer.sleep()
-    end)
+    |> Enum.each(&process_doc/1)
 
     IO.puts("No hay despachos pendientes para procesar.. ")
     IO.puts("Próximo chequeo en 10 segundos... ")
@@ -39,6 +31,26 @@ defmodule Barpay do
       SoloPendientes: 1
     })
     |> Enum.take(10)
+  end
+
+  defp process_doc(%{"TOTAL" => total, "TRANSACCIONID" => id, "DOCUMENTO" => doc}) do
+    create_link_and_code("Link de pago despacho #{doc}", "", total)
+    |> post_link(id)
+
+    IO.puts("Se genero el link de pago para #{doc}")
+
+    :timer.seconds(5)
+    |> :timer.sleep()
+  end
+
+  defp process_doc(error) do
+    IO.puts("Hubo un error con Teamplace... esperando 5 minutos para reintentar...")
+    IO.inspect error
+
+    :timer.minutes(5)
+    |> :timer.sleep
+
+    loop()
   end
 
   def create_link_and_code(title, description, amount) do
@@ -62,8 +74,8 @@ defmodule Barpay do
       Titulo: transaccionid,
       Descripcion: link,
       Rapipago: code,
-      FechaComprobante: today,
-      Fecha: today,
+      FechaComprobante: today(),
+      Fecha: today(),
       PersonaIDPropietario: "15",
       TransaccionTipoID: "CASOTEAMPLACE",
       TransaccionSubtipoID: "CB_ASIGN_LINK"
