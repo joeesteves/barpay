@@ -33,8 +33,16 @@ defmodule Barpay do
     |> Enum.take(10)
   end
 
-  defp process_doc(%{"TOTAL" => total, "TRANSACCIONID" => id, "DOCUMENTO" => doc, "CLIENTE" => cliente}) do
-    create_link_and_code("Link de pago despacho #{doc} - #{cliente}", "", total)
+  defp process_doc(%{
+         "TOTAL" => total,
+         "TRANSACCIONID" => id,
+         "DOCUMENTO" => doc,
+         "CLIENTE" => cliente,
+         "CLIENTECODIGO" => cliente_codigo
+       }) do
+    title = "Link de pago despacho #{doc} ** #{cliente_codigo} - #{cliente}"
+
+    create_link_and_code(title, "", total)
     |> post_link(id)
 
     IO.puts("Se genero el link de pago para #{doc}")
@@ -45,10 +53,10 @@ defmodule Barpay do
 
   defp process_doc(error) do
     IO.puts("Hubo un error con Teamplace... esperando 5 minutos para reintentar...")
-    IO.inspect error
+    IO.inspect(error)
 
     :timer.minutes(5)
-    |> :timer.sleep
+    |> :timer.sleep()
 
     loop()
   end
@@ -84,6 +92,6 @@ defmodule Barpay do
   end
 
   defp today do
-    Date.utc_today |> Date.to_iso8601
+    Date.utc_today() |> Date.to_iso8601()
   end
 end

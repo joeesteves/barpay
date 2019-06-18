@@ -10,6 +10,7 @@ BEGIN
     'Total' = a.importetotal,
     'Documento' = a.nombre,
     'Cliente' = c.nombre,
+    'ClienteCodigo' = c.codigo,
     'EmpresaID' = a.EmpresaId,
     'Link de pago' =  NULLIF(b.USR_Link, '')
   FROM bstransaccion AS a
