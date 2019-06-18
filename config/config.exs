@@ -1,7 +1,7 @@
 # This file is responsible for configuring your application
 # and its dependencies with the aid of the Mix.Config module.
 use Mix.Config
-
+# PRUEBA39 es la sucursal para pruebas
 config :barpay, sucursal: "BAR41"
 config :barpay, despachos_desde: "2018-11-02"
 

@@ -33,8 +33,8 @@ defmodule Barpay do
     |> Enum.take(10)
   end
 
-  defp process_doc(%{"TOTAL" => total, "TRANSACCIONID" => id, "DOCUMENTO" => doc}) do
-    create_link_and_code("Link de pago despacho #{doc}", "", total)
+  defp process_doc(%{"TOTAL" => total, "TRANSACCIONID" => id, "DOCUMENTO" => doc, "CLIENTE" => cliente}) do
+    create_link_and_code("Link de pago despacho #{doc} - #{cliente}", "", total)
     |> post_link(id)
 
     IO.puts("Se genero el link de pago para #{doc}")
