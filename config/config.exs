@@ -2,7 +2,9 @@
 # and its dependencies with the aid of the Mix.Config module.
 use Mix.Config
 # PRUEBA39 es la sucursal para pruebas
-config :barpay, sucursal: "BAR41"
+config :barpay, sucursal: "PRUEBA39"
+
+# config :barpay, sucursal: "BAR41"
 config :barpay, despachos_desde: "2018-11-02"
 
 config :mercado_pago, client_id: System.get_env("MP_BAR_CLIENT_ID")
@@ -10,7 +12,15 @@ config :mercado_pago, client_secret: System.get_env("MP_BAR_CLIENT_SECRET")
 config :mercado_pago, payment_methods: ["rapipago", "pagofacil"]
 config :mercado_pago, no_reply_mail: "no-reply@barosario.org.ar"
 
-config :teamplace, credentials: %{client_id: System.get_env("BAR_CLIENT_ID"), client_secret: System.get_env("BAR_CLIENT_SECRET")}
+config :teamplace,
+  bcra_token: System.get_env("TEAMPLACE_BCRA_TOKEN")
+
+config :teamplace,
+  credentials: %{
+    client_id: System.get_env("TEAMPLACE_CLIENT_ID"),
+    client_secret: System.get_env("TEAMPLACE_CLIENT_SECRET")
+  }
+
 config :teamplace, api_base: "https://8.teamplace.finneg.com/BSA/api/"
 
 # This configuration is loaded before any dependency and is restricted
@@ -39,7 +49,7 @@ config :teamplace, api_base: "https://8.teamplace.finneg.com/BSA/api/"
 # here (which is why it is important to import them last).
 #
 #     import_config "#{Mix.env}.exs"
-######USAR#####ADMINISTRADOR
-#TODO: activar claves
+###### USAR#####ADMINISTRADOR
+# TODO: activar claves
 ## teamplace client_id :85f48e322f4f6e089b5e4de00705d47e
 ## teamplace secret :0afb88c1417d1d49b76361e1ccd7695f
