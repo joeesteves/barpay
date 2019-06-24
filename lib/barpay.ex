@@ -1,24 +1,41 @@
 defmodule Barpay do
-  use Agent
+  use GenServer
   @sucursal Application.get_env(:barpay, :sucursal)
   @despachos_desde Application.get_env(:barpay, :despachos_desde)
 
   # Init method
   def start_link(_args) do
-    loop()
+    GenServer.start_link(__MODULE__, nil, name: __MODULE__)
   end
 
-  def loop do
-    get_pending_docs()
-    |> Enum.each(&process_doc/1)
+  def init(args) do
+    {:ok, args, {:continue, :start_process}}
+  end
 
+  def next_process(time \\ 0) do
+    Process.send_after(__MODULE__, :process_pending_docs, time)
+  end
+
+  def schedule do
+    next_process(10_000)
     IO.puts("No hay despachos pendientes para procesar.. ")
     IO.puts("Próximo chequeo en 10 segundos... ")
+  end
 
-    :timer.seconds(10)
-    |> :timer.sleep()
+  def handle_continue(:start_process, state) do
+    next_process
+    {:noreply, state}
+  end
 
-    loop()
+  def handle_info(:process_pending_docs, state) do
+    process_pending_docs()
+    schedule()
+    {:noreply, state}
+  end
+
+  def process_pending_docs do
+    get_pending_docs()
+    |> Enum.each(&process_doc/1)
   end
 
   def get_pending_docs do
@@ -58,7 +75,7 @@ defmodule Barpay do
     :timer.minutes(5)
     |> :timer.sleep()
 
-    loop()
+    next_process()
   end
 
   def create_link_and_code(title, description, amount) do
