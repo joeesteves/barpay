@@ -33,12 +33,12 @@ defmodule Barpay do
     {:noreply, state}
   end
 
-  def process_pending_docs do
+  defp process_pending_docs do
     get_pending_docs()
     |> Enum.each(&process_doc/1)
   end
 
-  def get_pending_docs do
+  defp get_pending_docs do
     IO.puts("Buscando nuevos pedidos...")
 
     Application.get_env(:teamplace, :credentials)
@@ -78,7 +78,7 @@ defmodule Barpay do
     next_process()
   end
 
-  def create_link_and_code(title, description, amount) do
+  defp create_link_and_code(title, description, amount) do
     IO.puts("Creando Link y código de pago...")
 
     case MercadoPago.get_link_and_rapipago_code(title, description, amount) do
@@ -88,7 +88,7 @@ defmodule Barpay do
     end
   end
 
-  def post_link(data, transaccionid) do
+  defp post_link(data, transaccionid) do
     Application.get_env(:teamplace, :credentials)
     |> Teamplace.post_data("caso", create_caso(transaccionid, data))
   end
