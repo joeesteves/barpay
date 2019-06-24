@@ -1,40 +1,36 @@
 defmodule Barpay.Queue do
+  use GenServer
+
   @moduledoc """
     SIMPLE FIFO Queue for storing payments ids
   """
   @queue "payment.queue"
   @separata "\n"
 
-  def get() do
-    send(__MODULE__, {:get, self()})
-
-    receive do
-      {:id, value} ->
-        value
-    end
+  def start_link() do
+    GenServer.start_link(__MODULE__, nil, name: __MODULE__)
   end
 
   def put(id) do
-    send(__MODULE__, {:put, id})
+    GenServer.cast(__MODULE__, {:put, id})
   end
 
-  def start do
-    File.touch(@queue)
-
-    proc = spawn(fn -> loop() end)
-    Process.register(proc, __MODULE__)
+  def get() do
+    GenServer.call(__MODULE__, :get)
   end
 
-  defp loop do
-    receive do
-      {:get, caller} ->
-        [head | tail] = File.read!(@queue) |> String.split(@separata)
-        File.write!(@queue, Enum.join(tail, @separata))
-        send(caller, {:id, head})
-        loop()
-      {:put, id} ->
-        File.write!(@queue, id <> @separata, [:append])
-        loop()
-    end
+  def init(args) do
+    {:ok, args}
+  end
+
+  def handle_call(:get, _from, _state) do
+    [head | tail] = File.read!(@queue) |> String.split(@separata)
+    File.write!(@queue, Enum.join(tail, @separata))
+    {:reply, head, nil}
+  end
+
+  def handle_cast({:put, id}, _state) do
+    File.write!(@queue, id <> @separata, [:append])
+    {:noreply, nil}
   end
 end
