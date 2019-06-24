@@ -14,7 +14,8 @@ defmodule Barpay.Application do
         scheme: :http,
         plug: Barpay.Endpoint,
         options: [port: 4001]
-      )
+      ),
+      {Barpay.Queue, []}
       # {Barpay, []}
     ]
 
