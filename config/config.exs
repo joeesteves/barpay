@@ -5,7 +5,7 @@ use Mix.Config
 config :barpay, sucursal: "PRUEBA39"
 
 # config :barpay, sucursal: "BAR41"
-config :barpay, despachos_desde: "2018-11-02"
+config :barpay, despachos_desde: "2019-06-24"
 
 config :mercado_pago, client_id: System.get_env("MP_BAR_CLIENT_ID")
 config :mercado_pago, client_secret: System.get_env("MP_BAR_CLIENT_SECRET")
