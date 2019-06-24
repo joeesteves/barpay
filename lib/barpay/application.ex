@@ -10,7 +10,7 @@ defmodule Barpay.Application do
     # # List all child processes to be supervised
     children = [
       # Starts a worker by calling: MercadoPago.Worker.start_link(arg)
-      {Barpay, []},
+      {Barpay.Preferences, []},
       {Barpay.Queue, []},
       Plug.Cowboy.child_spec(
         scheme: :http,

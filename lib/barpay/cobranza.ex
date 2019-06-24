@@ -2,21 +2,44 @@ defmodule Barpay.Cobranza do
   alias Teamplace.Cobranza
   alias Teamplace.Cobranza.{Banco, Otros, CtaCte, Cotizacion}
 
+  def start_process do
+    case Barpay.Queue.get() do
+      nil ->
+        false
+
+      id ->
+        MercadoPago.get_payment(id)
+        |> parse_payment
+        |> IO.inspect()
+        |> build_teamplace_payment
+        |> post_payment_to_teamplace
+    end
+  end
+
   def parse_payment(payment_json) do
     payment_decoded = Poison.decode!(payment_json)
 
     total = payment_decoded["transaction_details"]["total_paid_amount"]
     importe_neto = payment_decoded["transaction_details"]["net_received_amount"]
 
-    %{
-      cliente_codigo: extract_cliente_codigo(payment_decoded["description"]),
-      total: total,
-      importe_neto: importe_neto
-    }
+    [
+      extract_cliente_codigo(payment_decoded["description"]),
+      total,
+      importe_neto
+    ]
   end
 
-  def create(cliente_codigo, total, importe_neto) do
-    comision = Float.round(total - importe_neto, 2)
+  def build_teamplace_payment([cliente_codigo, total, importe_neto]) do
+    comision = total - importe_neto
+
+    comision =
+      case comision do
+        x when is_float(x) ->
+          Float.round(comision, 2)
+
+        x ->
+          x
+      end
 
     %Cobranza{
       EmpresaCodigo: Application.get_env(:barpay, :sucursal),
@@ -38,7 +61,7 @@ defmodule Barpay.Cobranza do
     |> Cobranza.add_dolar_price()
   end
 
-  def post_cobranza(cobranza) do
+  def post_payment_to_teamplace(cobranza) do
     case Poison.encode(cobranza) do
       {:ok, cobranza_json} ->
         Application.get_env(:teamplace, :credentials)
