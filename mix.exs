@@ -14,16 +14,14 @@ defmodule Barpay.MixProject do
   # Run "mix help compile.app" to learn about applications.
   def application do
     [
-      extra_applications: [:logger],
+      extra_applications: [:logger, :plug_cowboy],
       mod: {Barpay.Application, []}
     ]
   end
 
   # Run "mix help deps" to learn about dependencies.
   defp deps do
-    [
-      {:poison, "~> 3.1"} | deps_env
-    ]
+    [{:plug_cowboy, "~> 2.0"}, {:poison, "~> 3.1"} | deps_env()]
   end
 
   defp deps_env do
