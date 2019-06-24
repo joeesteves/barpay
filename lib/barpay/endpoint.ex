@@ -6,7 +6,14 @@ defmodule Barpay.Endpoint do
   plug(Plug.Parsers, parsers: [:json], json_decoder: Poison)
   plug(:dispatch)
 
-  get("/ping") do
+  get("/ipn") do
+    case conn.query_params do
+      %{"id" => id} ->
+        Barpay.Queue.put(id)
+      _ ->
+        IO.puts("IPN from mercado pago missing id")
+    end
+
     send_resp(conn, 200, "Pong! ;)")
   end
 
