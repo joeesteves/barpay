@@ -37,38 +37,55 @@ defmodule Barpay.Cobranza do
 
     case Barpay.Queue.get() do
       nil ->
-        IO.puts "No hay pagos pendientes de carga"
-        false
+        IO.puts("No hay pagos pendientes de carga")
+
       id ->
-        IO.puts "Cargando pago #{id} en teamplace"
+        IO.puts("Cargando pago #{id} en teamplace")
         post_pipeline(id)
+        schedule(10_000)
     end
   end
 
   defp post_pipeline(id) do
-    post_result =
-      MercadoPago.get_payment(id)
-      |> parse_payment
-      |> build_teamplace_payment(id)
-      |> post_payment_to_teamplace
+    MercadoPago.get_payment(id)
+    |> Poison.decode!()
+    |> validate_payment
+    |> yield_payment(id)
+  end
 
-    case post_result do
-      {:error, _} ->
-        Barpay.Queue.put(id)
+  defp yield_payment({:error, :not_valid}, id), do: IO.puts("Payment #{id} is not approved!")
 
-      x ->
-        x
+  defp yield_payment({:ok, payment}, id) do
+    payment
+    |> extract_relevant_fields_from_payment
+    |> build_teamplace_payment(id)
+    |> post_payment_to_teamplace
+    |> post_check(id)
+  end
+
+  defp post_check({:error, msg}, id) do
+    IO.inspect(msg)
+    Barpay.Queue.put(id)
+  end
+
+  defp post_check({:ok, _}), do: IO.puts("Payment posted to Teamplace :)")
+
+  defp validate_payment(payment) do
+    case payment["status"] do
+      "approved" ->
+        {:ok, payment}
+
+      _ ->
+        {:error, :not_valid}
     end
   end
 
-  defp parse_payment(payment_json) do
-    payment_decoded = Poison.decode!(payment_json)
-
-    total = payment_decoded["transaction_details"]["total_paid_amount"]
-    importe_neto = payment_decoded["transaction_details"]["net_received_amount"]
+  defp extract_relevant_fields_from_payment(payment) do
+    payment= total = payment["transaction_details"]["total_paid_amount"]
+    importe_neto = payment["transaction_details"]["net_received_amount"]
 
     [
-      extract_cliente_codigo(payment_decoded["description"]),
+      extract_cliente_codigo(payment["description"]),
       total,
       importe_neto
     ]
