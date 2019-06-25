@@ -15,7 +15,7 @@ defmodule Barpay.Application do
       Plug.Cowboy.child_spec(
         scheme: :http,
         plug: Barpay.Endpoint,
-        options: [port: 4001]
+        options: [port: Application.get_env(:barpay, :port) || 4201]
         ),
       {Barpay.Cobranza, []},
     ]
