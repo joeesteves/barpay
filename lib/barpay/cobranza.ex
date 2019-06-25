@@ -11,7 +11,9 @@ defmodule Barpay.Cobranza do
     {:ok, args, {:continue, :start_checking_queue}}
   end
 
-  def direct_check_queue, do: check_queue
+  def direct_check_queue do
+    schedule(0)
+  end
 
   def handle_continue(:start_checking_queue, state) do
     schedule(3_000)
@@ -20,7 +22,6 @@ defmodule Barpay.Cobranza do
 
   def handle_info(:check_queue, state) do
     check_queue
-    schedule(300_000)
     {:noreply, state}
   end
 
@@ -33,9 +34,10 @@ defmodule Barpay.Cobranza do
 
     case Barpay.Queue.get() do
       nil ->
+        IO.puts "No hay pagos pendientes de carga"
         false
-
       id ->
+        IO.puts "Cargando pago #{id} en teamplace"
         post_pipeline(id)
     end
   end
@@ -44,7 +46,7 @@ defmodule Barpay.Cobranza do
     post_result =
       MercadoPago.get_payment(id)
       |> parse_payment
-      |> build_teamplace_payment
+      |> build_teamplace_payment(id)
       |> post_payment_to_teamplace
 
     case post_result do
@@ -69,7 +71,7 @@ defmodule Barpay.Cobranza do
     ]
   end
 
-  defp build_teamplace_payment([cliente_codigo, total, importe_neto]) do
+  defp build_teamplace_payment([cliente_codigo, total, importe_neto], id) do
     comision = total - importe_neto
 
     comision =
@@ -83,7 +85,8 @@ defmodule Barpay.Cobranza do
 
     %Cobranza{
       EmpresaCodigo: Application.get_env(:barpay, :sucursal),
-      Proveedor: cliente_codigo
+      Proveedor: cliente_codigo,
+      Descripcion: build_description(id)
     }
     |> Cobranza.add_banco(%Banco{
       CuentaCodigo: "MERCADO_PAGO",
@@ -101,13 +104,18 @@ defmodule Barpay.Cobranza do
     |> Cobranza.add_dolar_price()
   end
 
+  defp build_description(id) do
+    "** MP_ID: #{id} **"
+  end
+
   defp post_payment_to_teamplace(cobranza) do
     case Poison.encode(cobranza) do
       {:ok, cobranza_json} ->
         Application.get_env(:teamplace, :credentials)
         |> Teamplace.post_data("cobranza", cobranza_json)
 
-      _ ->
+      x ->
+        IO.inspect(x)
         msg = "Error en la creación o envío de la cobranza"
         IO.puts(msg)
 
