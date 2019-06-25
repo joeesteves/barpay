@@ -6,7 +6,7 @@ defmodule Barpay.Endpoint do
   plug(Plug.Parsers, parsers: [:json], json_decoder: Poison)
   plug(:dispatch)
 
-  get("/ipn") do
+  post("/ipn") do
     case conn.query_params do
       %{"id" => id} ->
         Barpay.Queue.put(id)
