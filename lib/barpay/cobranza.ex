@@ -82,7 +82,7 @@ defmodule Barpay.Cobranza do
 
   defp is_valid(payment) do
     payment["status"] == "approved" &&
-      Regex.match?(~r/DDDON/, payment["description"])
+      Regex.match?(~r/DDDON.*\*{2}/, payment["description"])
   end
 
   defp extract_relevant_fields_from_payment(payment) do
