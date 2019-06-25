@@ -68,7 +68,7 @@ defmodule Barpay.Cobranza do
     Barpay.Queue.put(id)
   end
 
-  defp post_check({:ok, _}), do: IO.puts("Payment posted to Teamplace :)")
+  defp post_check({:ok, _}, id), do: IO.puts("Payment #{id} posted to Teamplace :)")
 
   defp validate_payment(payment) do
     cond do
