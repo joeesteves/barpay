@@ -100,7 +100,7 @@ defmodule Barpay.Cobranza do
       ImporteMonTransaccion: "#{comision}"
     })
     |> Cobranza.add_cta_cte(%CtaCte{
-      CuentaCodigo: "CLIENTES",
+      CuentaCodigo: "CCBEN",
       ImporteMonTransaccion: "#{total}",
       ImporteMonPrincipal: "#{total}"
     })
