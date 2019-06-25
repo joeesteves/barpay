@@ -20,6 +20,9 @@ defmodule Barpay.Cobranza do
     {:noreply, state}
   end
 
+  # due to bug on systemctl inistance.. :()
+  def handle_info({:ssl_closed, _msg}, state), do: {:noreply, state}
+
   def handle_info(:check_queue, state) do
     check_queue
     {:noreply, state}
