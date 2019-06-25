@@ -7,7 +7,6 @@ use Mix.Config
 
 config :barpay, sucursal: System.get_env("BAR_SUCURSAL")
 config :barpay, despachos_desde: "2019-06-24"
-config :barpay, port: System.get_env("BAR_PORT")
 
 config :mercado_pago, client_id: System.get_env("MP_BAR_CLIENT_ID")
 config :mercado_pago, client_secret: System.get_env("MP_BAR_CLIENT_SECRET")
