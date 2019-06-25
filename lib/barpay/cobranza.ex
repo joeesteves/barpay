@@ -1,22 +1,62 @@
 defmodule Barpay.Cobranza do
+  use GenServer
   alias Teamplace.Cobranza
   alias Teamplace.Cobranza.{Banco, Otros, CtaCte, Cotizacion}
 
-  def start_process do
+  def start_link(_args) do
+    GenServer.start_link(__MODULE__, nil, name: __MODULE__)
+  end
+
+  def init(args) do
+    {:ok, args, {:continue, :start_checking_queue}}
+  end
+
+  def direct_check_queue, do: check_queue
+
+  def handle_continue(:start_checking_queue, state) do
+    schedule(3_000)
+    {:noreply, state}
+  end
+
+  def handle_info(:check_queue, state) do
+    check_queue
+    schedule(300_000)
+    {:noreply, state}
+  end
+
+  defp schedule(time) do
+    Process.send_after(__MODULE__, :check_queue, time)
+  end
+
+  defp check_queue do
+    IO.puts("Chequeando pagos aprobados para enviar a Teamplace...")
+
     case Barpay.Queue.get() do
       nil ->
         false
 
       id ->
-        MercadoPago.get_payment(id)
-        |> parse_payment
-        |> IO.inspect()
-        |> build_teamplace_payment
-        |> post_payment_to_teamplace
+        post_pipeline(id)
     end
   end
 
-  def parse_payment(payment_json) do
+  defp post_pipeline(id) do
+    post_result =
+      MercadoPago.get_payment(id)
+      |> parse_payment
+      |> build_teamplace_payment
+      |> post_payment_to_teamplace
+
+    case post_result do
+      {:error, _} ->
+        Barpay.Queue.put(id)
+
+      x ->
+        x
+    end
+  end
+
+  defp parse_payment(payment_json) do
     payment_decoded = Poison.decode!(payment_json)
 
     total = payment_decoded["transaction_details"]["total_paid_amount"]
@@ -29,7 +69,7 @@ defmodule Barpay.Cobranza do
     ]
   end
 
-  def build_teamplace_payment([cliente_codigo, total, importe_neto]) do
+  defp build_teamplace_payment([cliente_codigo, total, importe_neto]) do
     comision = total - importe_neto
 
     comision =
@@ -61,14 +101,17 @@ defmodule Barpay.Cobranza do
     |> Cobranza.add_dolar_price()
   end
 
-  def post_payment_to_teamplace(cobranza) do
+  defp post_payment_to_teamplace(cobranza) do
     case Poison.encode(cobranza) do
       {:ok, cobranza_json} ->
         Application.get_env(:teamplace, :credentials)
         |> Teamplace.post_data("cobranza", cobranza_json)
 
       _ ->
-        IO.puts("Error en la creción o envío de la cobranza")
+        msg = "Error en la creación o envío de la cobranza"
+        IO.puts(msg)
+
+        {:error, msg}
     end
   end
 

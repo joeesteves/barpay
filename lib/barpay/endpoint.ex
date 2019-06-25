@@ -10,6 +10,7 @@ defmodule Barpay.Endpoint do
     case conn.query_params do
       %{"id" => id} ->
         Barpay.Queue.put(id)
+        Barpay.Cobranza.direct_check_queue
       _ ->
         IO.puts("IPN from mercado pago missing id")
     end
