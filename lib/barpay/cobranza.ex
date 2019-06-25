@@ -112,8 +112,11 @@ defmodule Barpay.Cobranza do
       EmpresaCodigo: Application.get_env(:barpay, :sucursal),
       Proveedor: cliente_codigo,
       Descripcion: build_description(id),
-      DiferenciaCambio: "0",
-      UsaCotizacionOrigen: "0"
+      DiferenciaCambio: 0,
+      UsaCotizacionOrigen: 0,
+      Cotizaciones: [
+        %Cotizacion{MonedaCodigo: "PES", Cotizacion: 1.00}
+      ]
     }
     |> Cobranza.add_banco(%Banco{
       CuentaCodigo: "MERCADO_PAGO",
@@ -132,6 +135,7 @@ defmodule Barpay.Cobranza do
       DebeHaber: -1,
       ImporteMonTransaccion: "#{total}",
       ImporteMonPrincipal: "#{total}",
+      Cotizacion: 1,
       MonedaCodigo: "PES"
     })
     |> Cobranza.add_dolar_price()
