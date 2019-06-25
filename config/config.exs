@@ -2,9 +2,10 @@
 # and its dependencies with the aid of the Mix.Config module.
 use Mix.Config
 # PRUEBA39 es la sucursal para pruebas
-config :barpay, sucursal: "PRUEBA39"
-
+# config :barpay, sucursal: "PRUEBA39"
 # config :barpay, sucursal: "BAR41"
+
+config :barpay, sucursal: System.get_env("BAR_SUCURSAL")
 config :barpay, despachos_desde: "2019-06-24"
 
 config :mercado_pago, client_id: System.get_env("MP_BAR_CLIENT_ID")
