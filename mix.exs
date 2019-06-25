@@ -28,8 +28,8 @@ defmodule Barpay.MixProject do
     case Mix.env() do
       :prod ->
         [
-          {:mercado_pago, git: "https://github.com/ponyesteves/mercado_pago.git", tag: "v0.2.3"},
-          {:teamplace, git: "https://github.com/ponyesteves/teamplace.git", tag: "v0.2.0"}
+          {:mercado_pago, git: "https://github.com/ponyesteves/mercado_pago.git", tag: "v0.3.0"},
+          {:teamplace, git: "https://github.com/ponyesteves/teamplace.git", tag: "v0.3.0"}
         ]
 
       _ ->
