@@ -111,20 +111,28 @@ defmodule Barpay.Cobranza do
     %Cobranza{
       EmpresaCodigo: Application.get_env(:barpay, :sucursal),
       Proveedor: cliente_codigo,
-      Descripcion: build_description(id)
+      Descripcion: build_description(id),
+      DiferenciaCambio: "0",
+      UsaCotizacionOrigen: "0"
     }
     |> Cobranza.add_banco(%Banco{
       CuentaCodigo: "MERCADO_PAGO",
-      ImporteMonTransaccion: "#{importe_neto}"
-    })
+      DebeHaber: 1,
+      ImporteMonTransaccion: "#{importe_neto}",
+      MonedaCodigo: "PES"
+      })
     |> Cobranza.add_otros(%Otros{
       CuentaCodigo: "GASBAN",
-      ImporteMonTransaccion: "#{comision}"
+      DebeHaber: 1,
+      ImporteMonTransaccion: "#{comision}",
+      MonedaCodigo: "PES"
     })
     |> Cobranza.add_cta_cte(%CtaCte{
       CuentaCodigo: "CCBEN",
+      DebeHaber: -1,
       ImporteMonTransaccion: "#{total}",
-      ImporteMonPrincipal: "#{total}"
+      ImporteMonPrincipal: "#{total}",
+      MonedaCodigo: "PES"
     })
     |> Cobranza.add_dolar_price()
   end
