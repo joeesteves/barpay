@@ -71,17 +71,22 @@ defmodule Barpay.Cobranza do
   defp post_check({:ok, _}), do: IO.puts("Payment posted to Teamplace :)")
 
   defp validate_payment(payment) do
-    case payment["status"] do
-      "approved" ->
+    cond do
+      is_valid(payment) ->
         {:ok, payment}
 
-      _ ->
+      true ->
         {:error, :not_valid}
     end
   end
 
+  defp is_valid(payment) do
+    payment["status"] == "approved" &&
+      Regex.match?(~r/DDDON/, payment["description"])
+  end
+
   defp extract_relevant_fields_from_payment(payment) do
-    payment= total = payment["transaction_details"]["total_paid_amount"]
+    total = payment["transaction_details"]["total_paid_amount"]
     importe_neto = payment["transaction_details"]["net_received_amount"]
 
     [
