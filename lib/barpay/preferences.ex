@@ -27,6 +27,8 @@ defmodule Barpay.Preferences do
     {:noreply, state}
   end
 
+  def handle_info({:ssl_closed, _msg}, state), do: {:noreply, state}
+
   def handle_info(:process_pending_docs, state) do
     process_pending_docs()
     schedule()
