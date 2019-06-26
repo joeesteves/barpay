@@ -2,6 +2,7 @@ defmodule Barpay.Preferences do
   use GenServer
   @sucursal Application.get_env(:barpay, :sucursal)
   @despachos_desde Application.get_env(:barpay, :despachos_desde)
+  @check_interval 20
 
   # Init method
   def start_link(_args) do
@@ -17,9 +18,9 @@ defmodule Barpay.Preferences do
   end
 
   def schedule do
-    next_process(10_000)
+    next_process(@check_interval * 1000)
     IO.puts("No hay despachos pendientes para procesar.. ")
-    IO.puts("Próximo chequeo en 10 segundos... ")
+    IO.puts("Próximo chequeo en #{@check_interval} segundos... ")
   end
 
   def handle_continue(:start_process, state) do
@@ -78,7 +79,7 @@ defmodule Barpay.Preferences do
     :timer.minutes(5)
     |> :timer.sleep()
 
-    next_process()
+    next_process(5_000)
   end
 
   defp create_link_and_code(title, description, amount) do

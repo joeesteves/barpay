@@ -16,7 +16,7 @@ defmodule Barpay.Cobranza do
   end
 
   def handle_continue(:start_checking_queue, state) do
-    schedule(3_000)
+    schedule(10_000)
     {:noreply, state}
   end
 
@@ -42,7 +42,7 @@ defmodule Barpay.Cobranza do
       id ->
         IO.puts("Cargando pago #{id} en teamplace")
         post_pipeline(id)
-        schedule(10_000)
+        schedule(60_000)
     end
   end
 
