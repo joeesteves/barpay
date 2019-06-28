@@ -111,6 +111,7 @@ defmodule Barpay.Cobranza do
     %Cobranza{
       EmpresaCodigo: Application.get_env(:barpay, :sucursal),
       Proveedor: cliente_codigo,
+      Fecha: "#{Date.utc_today()}",
       Descripcion: build_description(id),
       DiferenciaCambio: 0,
       UsaCotizacionOrigen: 0,
