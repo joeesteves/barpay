@@ -8,16 +8,19 @@ defmodule Barpay.Application do
   def start(_type, _args) do
     IO.puts("Comenzando...")
     # # List all child processes to be supervised
-    children = [
-      # Starts a worker by calling: MercadoPago.Worker.start_link(arg)
-      {Barpay.Preferences, []},
-      {Barpay.Queue, []},
+    plug_cowboy =
       Plug.Cowboy.child_spec(
         scheme: :http,
         plug: Barpay.Endpoint,
         options: [port: 4201]
-        ),
-      {Barpay.Cobranza, []},
+      )
+
+    children = [
+      # Starts a worker by calling: MercadoPago.Worker.start_link(arg)
+      Barpay.Preferences,
+      Barpay.Queue,
+      plug_cowboy,
+      Barpay.Cobranza
     ]
 
     # # # See https://hexdocs.pm/elixir/Supervisor.html
