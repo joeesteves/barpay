@@ -125,12 +125,7 @@ defmodule Barpay.Cobranza do
       ImporteMonTransaccion: "#{importe_neto}",
       MonedaCodigo: "PES"
       })
-    |> Cobranza.add_otros(%Otros{
-      CuentaCodigo: "GASBAN",
-      DebeHaber: 1,
-      ImporteMonTransaccion: "#{comision}",
-      MonedaCodigo: "PES"
-    })
+    |> add_comision(comision)
     |> Cobranza.add_cta_cte(%CtaCte{
       CuentaCodigo: "CCBEN",
       DebeHaber: -1,
@@ -141,6 +136,17 @@ defmodule Barpay.Cobranza do
     })
     |> Cobranza.add_dolar_price()
   end
+
+  defp add_comision(%Cobranza{} = cobranza, comision) when comision > 0 do
+    Cobranza.add_otros(cobranza, %Otros{
+      CuentaCodigo: "GASBAN",
+      DebeHaber: 1,
+      ImporteMonTransaccion: "#{comision}",
+      MonedaCodigo: "PES"
+    })
+  end
+
+  defp add_comision(%Cobranza{} = cobranza, _), do: cobranza
 
   defp build_description(id) do
     "** MP_ID: #{id} **"
